@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>X Recommendation Algorithm, Intuitively</title>
+    <meta
+      name="description"
+      content="An animated, math-first explainer of the open-source X For You recommendation pipeline."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <canvas id="heroCanvas" aria-hidden="true"></canvas>
+
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="Algorithm explainer home">
+        <span class="brand-mark"></span>
+        <span>X Algo Lab</span>
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a href="#intro">Intro</a>
+        <a href="#pipeline">Pipeline</a>
+        <a href="#math">Math</a>
+        <a href="#levers">Levers</a>
+        <a href="#models">Models</a>
+        <a href="#playbook">Playbook</a>
+        <a class="github-link" href="https://github.com/shikhargen/xplain" target="_blank" rel="noreferrer" aria-label="View source on GitHub">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 2C6.48 2 2 6.58 2 12.23c0 4.52 2.87 8.35 6.84 9.71.5.09.68-.22.68-.49 0-.24-.01-.88-.01-1.73-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.49-1.11-1.49-.91-.64.07-.63.07-.63 1 .07 1.53 1.05 1.53 1.05.9 1.57 2.35 1.12 2.92.85.09-.67.35-1.12.63-1.38-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05A9.3 9.3 0 0 1 12 6.94c.85 0 1.7.12 2.5.34 1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.8-4.57 5.06.36.32.68.95.68 1.91 0 1.38-.01 2.49-.01 2.83 0 .27.18.59.69.49A10.13 10.13 0 0 0 22 12.23C22 6.58 17.52 2 12 2Z" />
+          </svg>
+        </a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Open-source X algorithm, May 2026 snapshot</p>
+          <h1>How a post earns reach</h1>
+          <p class="lead">
+            A post does not simply "go viral." It must be retrieved, survive filters,
+            predict valuable viewer actions, avoid negative feedback, and compete inside
+            a diverse feed.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="#pipeline">Trace the system</a>
+            <a class="button secondary" href="#math">Open the score</a>
+          </div>
+        </div>
+        <div class="hero-panel" aria-label="Live score summary">
+          <div class="panel-title">Ranking Equation</div>
+          <div class="formula">
+            score = sum(w_i * p_i) - risk + context
+          </div>
+          <div class="signal-grid">
+            <span>Retrieval</span><strong id="heroRetrieval">0.78</strong>
+            <span>Positive actions</span><strong id="heroPositive">0.64</strong>
+            <span>Negative risk</span><strong id="heroRisk">0.12</strong>
+            <span>Final score</span><strong id="heroFinal">0.91</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="section intro" id="intro">
+        <div class="section-kicker">From scratch</div>
+        <h2>The feed is a competition for each viewer</h2>
+        <p>
+          For every viewer, the system starts with their recent action history:
+          posts they liked, replied to, reposted, dwelled on, ignored, blocked,
+          muted, or reported. That history becomes the viewer context. Candidate
+          posts are then pulled from followed accounts, global retrieval models,
+          topic retrieval, cached candidates, and other sources.
+        </p>
+        <div class="three-up">
+          <article>
+            <span class="chip">1</span>
+            <h3>Find candidates</h3>
+            <p>Use follows, user history, topic context, and post-author embeddings.</p>
+          </article>
+          <article>
+            <span class="chip">2</span>
+            <h3>Predict actions</h3>
+            <p>Estimate many probabilities: like, reply, repost, dwell, follow, mute, report.</p>
+          </article>
+          <article>
+            <span class="chip">3</span>
+            <h3>Blend a feed</h3>
+            <p>Apply filters, score, diversify authors, select top posts, then insert modules.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section pipeline" id="pipeline">
+        <div class="section-heading">
+          <div>
+            <div class="section-kicker">Animated pipeline</div>
+            <h2>Seven gates between a post and reach</h2>
+          </div>
+          <button class="icon-button" id="replayPipeline" aria-label="Replay animation">
+            <span>Replay</span>
+          </button>
+        </div>
+
+        <div class="pipeline-stage" data-stage="0">
+          <div class="stage-node">Viewer History</div>
+          <div class="stage-line"></div>
+          <div class="stage-node">Candidate Sources</div>
+          <div class="stage-line"></div>
+          <div class="stage-node">Hydration</div>
+          <div class="stage-line"></div>
+          <div class="stage-node">Filters</div>
+          <div class="stage-line"></div>
+          <div class="stage-node">Phoenix Scores</div>
+          <div class="stage-line"></div>
+          <div class="stage-node">Ranking</div>
+          <div class="stage-line"></div>
+          <div class="stage-node">Feed</div>
+        </div>
+
+        <div class="flow-lab">
+          <div class="lab-visual" aria-hidden="true">
+            <canvas id="pipelineCanvas"></canvas>
+          </div>
+          <div class="lab-copy">
+            <ol class="steps" id="steps">
+              <li><strong>Query hydration.</strong> Fetch viewer action sequence, follows, mutes, blocks, topics, served history, IP and context.</li>
+              <li><strong>Sources.</strong> Pull in-network posts from followed accounts and out-of-network candidates from Phoenix retrieval, topics, MoE, and TweetMixer.</li>
+              <li><strong>Candidate hydration.</strong> Add post text, author info, media, language, quote data, video duration, subscription state, and safety labels.</li>
+              <li><strong>Pre-score filters.</strong> Remove duplicates, old posts, self posts, retweet duplicates, muted authors, muted keywords, seen posts, served posts, video exclusions, and topic mismatches.</li>
+              <li><strong>Phoenix prediction.</strong> A transformer predicts action probabilities for each candidate in the viewer context.</li>
+              <li><strong>Final ranking.</strong> Combine weighted probabilities, normalize, apply author diversity, downweight some out-of-network cases, and optionally run a value model ranker.</li>
+              <li><strong>Post-selection.</strong> Apply visibility filtering, ancillary filtering, conversation deduplication, then blend posts with ads and modules.</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <section class="section math" id="math">
+        <div class="section-kicker">The math</div>
+        <h2>Ranking is expected value under constraints</h2>
+        <p>
+          The production weights are runtime feature-switch params, so this explainer exposes
+          the exact structure and a demo-weight sandbox. Move the controls to see why
+          one post can lose despite many likes if negative predictions or context penalties rise.
+        </p>
+
+        <div class="math-grid">
+          <div class="score-card">
+            <div class="equation" aria-label="Ranking formula">
+              S_raw = sum(w_i p_i)<br />
+              S_final = diversity(S_raw) * oon_factor
+            </div>
+            <div class="score-readout">
+              <span>Demo final score</span>
+              <strong id="scoreValue">0.000</strong>
+            </div>
+            <div class="score-bars" id="scoreBars"></div>
+          </div>
+
+          <form class="controls" id="scoreControls">
+            <label>
+              Favorite probability
+              <input type="range" min="0" max="100" value="42" data-key="favorite" />
+            </label>
+            <label>
+              Reply probability
+              <input type="range" min="0" max="100" value="18" data-key="reply" />
+            </label>
+            <label>
+              Repost probability
+              <input type="range" min="0" max="100" value="24" data-key="repost" />
+            </label>
+            <label>
+              Dwell probability
+              <input type="range" min="0" max="100" value="55" data-key="dwell" />
+            </label>
+            <label>
+              Follow-author probability
+              <input type="range" min="0" max="100" value="11" data-key="follow" />
+            </label>
+            <label>
+              Negative feedback risk
+              <input type="range" min="0" max="100" value="8" data-key="negative" />
+            </label>
+            <label>
+              Same-author repeat count
+              <input type="range" min="0" max="5" value="1" data-key="repeat" />
+            </label>
+            <label>
+              Out-of-network penalty
+              <input type="range" min="50" max="120" value="82" data-key="oon" />
+            </label>
+          </form>
+        </div>
+
+        <div class="formula-list">
+          <article>
+            <h3>Retrieval</h3>
+            <code>top_k = argmax(user_vector dot post_author_vector)</code>
+            <p>The post first needs high similarity to a viewer's history and topic context.</p>
+          </article>
+          <article>
+            <h3>Scoring</h3>
+            <code>sum(action_probability * action_weight)</code>
+            <p>Positive and negative predicted actions are both part of the weighted score.</p>
+          </article>
+          <article>
+            <h3>Diversity</h3>
+            <code>multiplier = (1 - floor) * decay^position + floor</code>
+            <p>Repeated posts from the same author are attenuated inside a feed response.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section levers" id="levers">
+        <div class="section-kicker">Non-obvious levers</div>
+        <h2>What strong accounts optimize for</h2>
+        <div class="lever-grid">
+          <article class="lever">
+            <span class="lever-icon">A</span>
+            <h3>Author embedding</h3>
+            <p>Your account identity enters retrieval. A coherent lane makes the author easier to match to users who already engage with that lane.</p>
+          </article>
+          <article class="lever">
+            <span class="lever-icon">D</span>
+            <h3>Dwell, not just clicks</h3>
+            <p>The model predicts dwell and not-dwelled outcomes. Thin hooks that cause fast exits can underperform deeper posts.</p>
+          </article>
+          <article class="lever">
+            <span class="lever-icon">F</span>
+            <h3>Follow intent</h3>
+            <p>Follow-author probability is a ranking input. Posts that make the account feel worth following can have extra value.</p>
+          </article>
+          <article class="lever">
+            <span class="lever-icon">N</span>
+            <h3>Negative risk</h3>
+            <p>Not interested, mute, block, report, and not-dwelled are direct score inputs or filters. Avoid bait that polarizes outside the intended audience.</p>
+          </article>
+          <article class="lever">
+            <span class="lever-icon">R</span>
+            <h3>Repeat penalty</h3>
+            <p>Same-author diversity means flooding can cannibalize distribution. Fewer high-conviction posts can beat volume bursts.</p>
+          </article>
+          <article class="lever">
+            <span class="lever-icon">Q</span>
+            <h3>Quote mechanics</h3>
+            <p>Quote, quoted click, and quoted video view are separate predictions. Good framing can turn another post into a high-signal candidate.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section architecture" id="models">
+        <div class="section-kicker">Model intuition</div>
+        <h2>Two models, two jobs</h2>
+        <div class="split">
+          <div class="model-card">
+            <h3>Retrieval model</h3>
+            <p>
+              Compress the viewer into a vector. Compress posts plus authors into vectors.
+              Pull the nearest candidates from a huge corpus.
+            </p>
+            <div class="mini-plot" id="retrievalPlot" aria-hidden="true"></div>
+          </div>
+          <div class="model-card">
+            <h3>Ranking model</h3>
+            <p>
+              Place user, history, and candidates into a transformer. Candidates attend to
+              user and history, not to one another, so each score is stable.
+            </p>
+            <div class="attention-map" aria-label="Candidate isolation attention map">
+              <span class="on"></span><span class="on"></span><span></span><span></span>
+              <span class="on"></span><span class="on"></span><span></span><span></span>
+              <span class="on"></span><span class="on"></span><span class="on"></span><span></span>
+              <span class="on"></span><span class="on"></span><span></span><span class="on"></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section playbook" id="playbook">
+        <div class="section-kicker">Practical synthesis</div>
+        <h2>Account and post playbook</h2>
+        <div class="playbook-grid">
+          <div>
+            <h3>For every post</h3>
+            <ul>
+              <li>Lead with a clear promise so the right viewers keep reading.</li>
+              <li>Create reply-worthy specificity, not vague engagement bait.</li>
+              <li>Make reposting socially useful: frameworks, charts, checklists, proof.</li>
+              <li>Use media when it increases comprehension or watch time.</li>
+              <li>Cut terms that trigger many muted-keyword filters in your target audience.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>For the account</h3>
+            <ul>
+              <li>Keep a coherent topic lane so retrieval can place the author.</li>
+              <li>Earn follows from people who repeatedly engage in that lane.</li>
+              <li>Post at a cadence where each candidate can breathe.</li>
+              <li>Use quotes and replies where your framing adds standalone value.</li>
+              <li>Optimize for low negative feedback as much as high positive feedback.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>
+        Built from the open-source X recommendation snapshot. Production weights are
+        runtime params, so numeric examples are illustrative unless explicitly shown in code.
+      </p>
+      <a href="#top">Back to top</a>
+    </footer>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
